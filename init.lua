@@ -21,13 +21,35 @@ vim.keymap.set("i", "jj", "<Esc>")
 vim.keymap.set("v", "jk", "<Esc>")
 
 -- neotree
-vim.keymap.set('n', '<leader>e', function()
-  require('neo-tree.command').execute({ toggle = false, reveal = true, focus = true })
-end, { desc = 'Show/focus Neo-tree' })
+-- Disable netrw (strongly recommended)
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
 
-vim.keymap.set('n', '<leader>eq', function()
-  require('neo-tree.command').execute({ action = "close" })
-end, { desc = 'Close Neo-tree' })
+-- Setup with options
+require("nvim-tree").setup({
+  sort_by = "case_sensitive",
+  view = {
+    width = 30,
+  },
+  renderer = {
+    group_empty = true,
+  },
+  filters = {
+    dotfiles = false, -- Show hidden files
+  },
+})
+
+-- Keybindings
+vim.keymap.set("n", "<leader>e", function()
+  local nvim_tree = require("nvim-tree.api")
+  if nvim_tree.tree.is_visible() then
+    nvim_tree.tree.focus()  -- Focus if already open
+  else
+    nvim_tree.tree.open()   -- Open if closed
+  end
+end, { desc = "Focus/Open Nvim-tree" })
+
+
 
 local keymap = vim.keymap.set
 local opts = { noremap = true, silent = true }
@@ -85,6 +107,4 @@ keymap('n', '<leader>QQ', ':q!<CR>', opts)      -- Force quit
 
 -- Make <Esc> exit terminal mode
 vim.keymap.set('t', 'jj', [[<C-\><C-n>]], opts)
-
-
 
