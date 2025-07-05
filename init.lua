@@ -1,7 +1,34 @@
 require("config.lazy")
 require("mason").setup()
 require("config.cmp")
+require("mason-lspconfig").setup({
+  ensure_installed = { "pyright", "rust_analyzer" },
+})
 
+-- Add this to your init.lua or config file
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    -- Get all buffer numbers
+    local buffers = vim.api.nvim_list_bufs()
+    
+    for _, buf in ipairs(buffers) do
+      -- Skip unloaded buffers
+      if vim.api.nvim_buf_is_loaded(buf) then
+        local buf_name = vim.api.nvim_buf_get_name(buf)
+        
+        -- Check if buffer name contains "NVIMTREE" (case insensitive)
+        if buf_name:upper():find("NvimTree") then
+          -- Forcefully wipe out the buffer
+          vim.cmd("silent! bwipeout " .. buf)
+        end
+      end
+    end
+    
+    -- Optional: Notify how many buffers were cleaned
+    print("Cleaned up NVIMTREE buffers on startup")
+  end,
+  once = true,  -- Only run once on startup
+})
 
 vim.g.catppuccin_flavour = "mocha"
 vim.cmd.colorscheme "catppuccin"
@@ -48,8 +75,6 @@ vim.keymap.set("n", "<leader>e", function()
     nvim_tree.tree.open()   -- Open if closed
   end
 end, { desc = "Focus/Open Nvim-tree" })
-
-
 
 local keymap = vim.keymap.set
 local opts = { noremap = true, silent = true }
@@ -108,3 +133,21 @@ keymap('n', '<leader>QQ', ':q!<CR>', opts)      -- Force quit
 -- Make <Esc> exit terminal mode
 vim.keymap.set('t', 'jj', [[<C-\><C-n>]], opts)
 
+
+local opts = { noremap = true, silent = true }
+
+-- General Rust/Cargo commands
+vim.keymap.set("n", "<leader>cb", ":CargoBuild<CR>", opts)          -- Build
+vim.keymap.set("n", "<leader>cr", ":CargoRunTerm<CR>", opts)            -- Run
+vim.keymap.set("n", "<leader>ct", ":CargoTest<CR>", opts)           -- Test
+vim.keymap.set("n", "<leader>cc", ":CargoCheck<CR>", opts)          -- Check
+vim.keymap.set("n", "<leader>cl", ":CargoClippy<CR>", opts)         -- Clippy
+vim.keymap.set("n", "<leader>cf", ":CargoFmt<CR>", opts)            -- Format
+vim.keymap.set("n", "<leader>cu", ":CargoUpdate<CR>", opts)         -- Update
+vim.keymap.set("n", "<leader>cd", ":CargoDoc<CR>", opts)            -- Generate docs
+vim.keymap.set("n", "<leader>cx", ":CargoClean<CR>", opts)          -- Clean
+
+-- Interactive commands (e.g., add/remove dependencies)
+vim.keymap.set("n", "<leader>ca", ":CargoAdd<CR>", opts)            -- Add dependency
+vim.keymap.set("n", "<leader>crm", ":CargoRemove<CR>", opts)        -- Remove dependency
+vim.keymap.set("n", "<leader>cn", ":CargoNew<CR>", opts)            -- Create new project
