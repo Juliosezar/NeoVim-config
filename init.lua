@@ -30,8 +30,31 @@ vim.api.nvim_create_autocmd("VimEnter", {
   once = true,  -- Only run once on startup
 })
 
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    if vim.fn.argc() == 0 then
+      -- Prevent Alpha redraw crashes
+      vim.schedule(function()
+        local alpha = require("alpha")
+        alpha.start()
+      end)
+    end
+  end,
+})
+
+local keymap = vim.keymap.set
+local opts = { noremap = true, silent = true }
+-- Show diagnostics in a floating window
+keymap("n", "<leader>ld", vim.diagnostic.open_float, { desc = "Line diagnostics" })
+-- Show all diagnostics in location list
+keymap("n", "<leader>lq", vim.diagnostic.setloclist, { desc = "Diagnostic list" })
+
+
 vim.g.catppuccin_flavour = "mocha"
 vim.cmd.colorscheme "catppuccin"
+require("notify").setup({
+  background_colour = "#1e1e2e",  -- or "#000000" or a better match to your theme
+}) 
 -- Set transparent background (works with most themes)
 vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
 vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
@@ -149,5 +172,5 @@ vim.keymap.set("n", "<leader>cx", ":CargoClean<CR>", opts)          -- Clean
 
 -- Interactive commands (e.g., add/remove dependencies)
 vim.keymap.set("n", "<leader>ca", ":CargoAdd<CR>", opts)            -- Add dependency
-vim.keymap.set("n", "<leader>crm", ":CargoRemove<CR>", opts)        -- Remove dependency
+-- vim.keymap.set("n", "<leader>crm", ":CargoRemove<CR>", opts)        -- Remove dependency
 vim.keymap.set("n", "<leader>cn", ":CargoNew<CR>", opts)            -- Create new project
