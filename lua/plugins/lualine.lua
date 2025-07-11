@@ -26,7 +26,14 @@ return {
           lualine_a = { "mode" },
           lualine_b = { "branch", "diff", "diagnostics" },
           lualine_c = { "filename" },
-          lualine_x = { "encoding", "fileformat", "filetype" },
+          lualine_x = {
+            "encoding",
+            "fileformat",
+            "filetype",
+            function()
+              return require("NeoComposer.ui").status_recording()
+            end,
+          },
           lualine_y = { "progress" },
           lualine_z = { "location" },
         },
@@ -44,6 +51,29 @@ return {
         extensions = {},
       })
     end,
+  },
+
+  {
+    "ecthelionvi/NeoComposer.nvim",
+    dependencies = { "kkharji/sqlite.lua" },
+    config = function()
+      require("NeoComposer").setup({
+        keymaps = {
+          play_macro = "Q",
+          yank_macro = "yq",
+          stop_macro = "cq",
+          toggle_record = "q",
+        },
+        notify = true,
+        delay_timer = 150,
+        highlight = {
+          on_play = true,
+          on_record = true,
+          clear = 500,
+        },
+      })
+    end,
+    event = "VeryLazy",
   },
 }
 

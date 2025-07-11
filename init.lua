@@ -45,9 +45,9 @@ vim.api.nvim_create_autocmd("VimEnter", {
 local keymap = vim.keymap.set
 local opts = { noremap = true, silent = true }
 -- Show diagnostics in a floating window
-keymap("n", "<leader>ld", vim.diagnostic.open_float, { desc = "Line diagnostics" })
+keymap("n", "<leader>rl", vim.diagnostic.open_float, { desc = "Line diagnostics" })
 -- Show all diagnostics in location list
-keymap("n", "<leader>lq", vim.diagnostic.setloclist, { desc = "Diagnostic list" })
+keymap("n", "<leader>rd", vim.diagnostic.setloclist, { desc = "Diagnostic list" })
 
 
 vim.g.catppuccin_flavour = "mocha"
@@ -147,7 +147,40 @@ end, { noremap = true, silent = true, desc = "Open terminal in vertical split" }
 -- Save
 keymap('n', '<leader>ww', ':w<CR>', opts)     -- Save file
 -- Quit
-keymap('n', '<leader>qq', ':q<CR>', opts)     -- Quit window
+vim.keymap.set("n", "<leader>qq", function()
+  -- gather all listed buffers
+  local bufs = vim.tbl_filter(function(b)
+    return vim.api.nvim_buf_is_valid(b) and vim.fn.buflisted(b) == 1
+  end, vim.api.nvim_list_bufs())
+
+  local cur = vim.api.nvim_get_current_buf()
+
+  local function buf_is_term(buf)
+    return vim.api.nvim_buf_get_option(buf, "buftype") == "terminal"
+  end
+
+  if #bufs <= 1 then
+    -- only one buffer open → close it and quit Neovim
+    if buf_is_term(cur) then
+      vim.cmd("bd! " .. cur)  -- force delete terminal buffer
+    else
+      vim.cmd("bd " .. cur)
+    end
+    vim.cmd("qa")
+  else
+    -- multiple buffers → go to last, then delete current
+    vim.cmd("bp")  -- switch to previous buffer
+    local prev_buf = vim.fn.bufnr("#")  -- alternate buffer
+
+    if buf_is_term(prev_buf) then
+      vim.cmd("bd! " .. prev_buf)
+    else
+      vim.cmd("bd " .. prev_buf)
+    end
+  end
+end, { desc = "Close buffer or exit Neovim if last" })
+
+
 -- Save and Quit
 keymap('n', '<leader>wq', ':wq<CR>', opts)    -- Save and quit
 -- force quit
@@ -174,3 +207,5 @@ vim.keymap.set("n", "<leader>cx", ":CargoClean<CR>", opts)          -- Clean
 vim.keymap.set("n", "<leader>ca", ":CargoAdd<CR>", opts)            -- Add dependency
 -- vim.keymap.set("n", "<leader>crm", ":CargoRemove<CR>", opts)        -- Remove dependency
 vim.keymap.set("n", "<leader>cn", ":CargoNew<CR>", opts)            -- Create new project
+
+
