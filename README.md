@@ -18,7 +18,7 @@ cd ~/.config/nvim/
 </code></pre>
 <h2 id="installing-dependencies">Installing dependencies</h2>
 <p>installing lua and luaRocks:</p>
-<pre><code>sudo apt install lua5.4 liblua5.4-dev
+<pre><code>sudo apt install lua5.4 liblua5.4-dev sqlite3 libsqlite3-dev
 </code></pre>
 <p>replace 5.4 with version you want.</p>
 <p>installing luarocks:<br>
@@ -32,6 +32,10 @@ $ lua
 Lua 5.3.5 Copyright (C) 1994-2018 Lua.org, PUC-Rio
 &gt; require "socket"
 </code></pre>
+<h2 id="download--install-a-nerdfont">Download &amp; install a NerdFont</h2>
+<p><a href="https://www.nerdfonts.com/font-downloads">the official website</a></p>
+<h2 id="python--rust-requierment">python &amp; rust requierment</h2>
+<p>for installing rust</p>
 <h2 id="fixing-django-problems">FIXING DJANGO PROBLEMS</h2>
 <p>first activate virtual env and then:</p>
 <pre><code>pip install django-stubs
