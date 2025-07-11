@@ -12,8 +12,10 @@ sudo dnf install neovim   // for redhat\fedora
 <pre><code>mkdir ~/.config/nvim/
 cd ~/.config/nvim/
 </code></pre>
-<p>then clone this repo:<br>
-git clone <a href="mailto:git@github.com">git@github.com</a>:Juliosezar/NeoVim-config.git</p>
+<p>then clone this repo:</p>
+<pre><code>git clone git@github.com:Juliosezar/NeoVim-config.git
+</code></pre>
+<h2 id="installing-dependencies">Installing dependencies</h2>
 <h2 id="fixing-django-problems">FIXING DJANGO PROBLEMS</h2>
 <p>first activate virtual env and then:</p>
 <pre><code>pip install django-stubs
