@@ -17,8 +17,8 @@ cd ~/.config/nvim/
 <pre><code>git clone https://github.com/Juliosezar/NeoVim-config.git .
 </code></pre>
 <h2 id="installing-dependencies">Installing dependencies</h2>
-<p>installing lua and luaRocks:</p>
-<pre><code>sudo apt install lua5.4 liblua5.4-dev sqlite3 libsqlite3-dev
+<p>installing lua and luaRocks &amp; other dependencies:</p>
+<pre><code>sudo apt install lua5.4 liblua5.4-dev sqlite3 libsqlite3-dev npm python3.10-venv
 </code></pre>
 <p>replace 5.4 with version you want.</p>
 <p>installing luarocks:<br>
@@ -33,8 +33,15 @@ Lua 5.3.5 Copyright (C) 1994-2018 Lua.org, PUC-Rio
 &gt; require "socket"
 </code></pre>
 <h2 id="download--install-a-nerdfont">Download &amp; install a NerdFont</h2>
-<p><a href="https://www.nerdfonts.com/font-downloads">the official website</a></p>
+<p><a href="https://www.nerdfonts.com/font-downloads">the official website</a><br>
+then change your terminal font to nerdfont; for rtl support use ‘konsole’ terminal.</p>
 <h2 id="python--rust-requierment">python &amp; rust requierment</h2>
+<p>run nvim:<br>
+install language server with : <code>:MasonInstall lua-language-server</code><br>
+install nodejs for lsp:</p>
+<pre><code>curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt-get install nodejs
+</code></pre>
 <p>for installing rust</p>
 <h2 id="fixing-django-problems">FIXING DJANGO PROBLEMS</h2>
 <p>first activate virtual env and then:</p>
