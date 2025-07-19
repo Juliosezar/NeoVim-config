@@ -1,5 +1,5 @@
 return {
-  -- LSP Package Manager (Mason)
+  -- 1. Mason: LSP installer
   {
     "williamboman/mason.nvim",
     config = function()
@@ -7,56 +7,29 @@ return {
     end,
   },
 
-  -- Bridge between Mason and LSP
+  -- 2. Mason‑lspconfig: install servers
   {
     "williamboman/mason-lspconfig.nvim",
     config = function()
       require("mason-lspconfig").setup({
-        ensure_installed = { "lua_ls", "clangd", "pyright" }, -- Auto-install LSPs
+        ensure_installed = { "lua_ls", "clangd", "pyright" },
       })
     end,
   },
 
-  -- Main LSP Config
+  -- 3. blink.cmp: fast Rust‑based completion
+
+
+  -- 4. Snippet engine
   {
-    "neovim/nvim-lspconfig",
+    "L3MON4D3/LuaSnip",
+    dependencies = { "rafamadriz/friendly-snippets" },
     config = function()
-      local lspconfig = require("lspconfig")
-      
-      -- Lua LSP
-      lspconfig.lua_ls.setup({})
-
-      -- Python LSP
-      lspconfig.pyright.setup({})
-
-      -- C/C++ LSP
-      lspconfig.clangd.setup({})
+      require("luasnip.loaders.from_vscode").lazy_load()
     end,
   },
 
-  -- Autocompletion (Optional but recommended)
-  {
-    "hrsh7th/nvim-cmp",
-    dependencies = {
-      "hrsh7th/cmp-nvim-lsp", -- LSP source
-      "hrsh7th/cmp-buffer",   -- Text from buffer
-      "hrsh7th/cmp-path",     -- File paths
-      "L3MON4D3/LuaSnip",     -- Snippets
-    },
-    config = function()
-      local cmp = require("cmp")
-      cmp.setup({
-        snippet = { expand = function(args) require("luasnip").lsp_expand(args.body) end },
-        mapping = cmp.mapping.preset.insert({
-          ["<C-Space>"] = cmp.mapping.complete(),
-          ["<CR>"] = cmp.mapping.confirm({ select = true }),
-        }),
-        sources = cmp.config.sources({
-          { name = "nvim_lsp" }, -- LSP completions
-          { name = "buffer" },   -- Current buffer words
-          { name = "path" },     -- File paths
-        }),
-      })
-    end,
-  },
+  -- 5. LSP configs with blink.cmp capabilities
+
 }
+

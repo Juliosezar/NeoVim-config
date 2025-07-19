@@ -1,24 +1,23 @@
+-- plugins/snippets.lua
 return {
-  -- LuaSnip snippet engine
   {
     "L3MON4D3/LuaSnip",
-    build = (vim.fn.has("win32") ~= 0) and "make install_jsregexp" or nil,
+    version = "v2.*",
+    build = "make install_jsregexp",  -- improve regex performance (optional)
+    event = "InsertEnter",
     dependencies = {
-      -- Collection of snippets
-      "rafamadriz/friendly-snippets",
+      {
+        "rafamadriz/friendly-snippets",
+        config = function()
+          require("luasnip.loaders.from_vscode").lazy_load()
+        end,
+      },
     },
-    config = function()
-      local luasnip = require("luasnip")
+    opts = {
+      history = true,
+      delete_check_events = "TextChanged",
+    },
 
-      -- Load snippets from friendly-snippets
-      require("luasnip.loaders.from_vscode").lazy_load()
-
-      -- Optional: Configure LuaSnip
-      luasnip.config.set_config({
-        history = true,
-        updateevents = "TextChanged,TextChangedI",
-      })
-    end,
   },
 }
 

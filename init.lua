@@ -1,6 +1,6 @@
 require("config.lazy")
 require("mason").setup()
-require("config.cmp")
+-- require("config.cmp")
 require("mason-lspconfig").setup({
   ensure_installed = { "pyright", "rust_analyzer" },
 })
@@ -164,7 +164,7 @@ vim.keymap.set("n", "<leader>qq", function()
     if buf_is_term(cur) then
       vim.cmd("bd! " .. cur)  -- force delete terminal buffer
     else
-      vim.cmd("bd " .. cur)
+      vim.cmd("bd! " .. cur)
     end
     vim.cmd("qa")
   else
@@ -175,7 +175,7 @@ vim.keymap.set("n", "<leader>qq", function()
     if buf_is_term(prev_buf) then
       vim.cmd("bd! " .. prev_buf)
     else
-      vim.cmd("bd " .. prev_buf)
+      vim.cmd("bd! " .. prev_buf)
     end
   end
 end, { desc = "Close buffer or exit Neovim if last" })

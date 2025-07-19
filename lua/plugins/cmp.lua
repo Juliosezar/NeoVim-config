@@ -1,32 +1,38 @@
+-- plugins/completion.lua
 return {
   {
-    "hrsh7th/nvim-cmp",
+    "saghen/blink.cmp",
+    version = "*",              -- track latest stable (you can pin "1.0")
     dependencies = {
-      "hrsh7th/cmp-nvim-lsp",
-      "saadparwaiz1/cmp_luasnip",
-      "L3MON4D3/LuaSnip",
-      "hrsh7th/cmp-buffer",
-      "hrsh7th/cmp-path",
-      "hrsh7th/cmp-cmdline",
       "rafamadriz/friendly-snippets",
-      -- 👇 Add this
-      "supermaven-inc/supermaven-nvim",
+      { "saghen/blink.compat", optional = true },
     },
-    config = function()
-      local cmp = require("cmp")
-      cmp.setup({
-        sources = {
-          { name = "supermaven" }, -- 👈 Add this source
-          { name = "nvim_lsp" },
-          { name = "luasnip" },
-          { name = "buffer" },
-          { name = "path" },
-        },
-        sorting = {
-          priority_weight = 2,
-        },
-      })
+    event = "InsertEnter",
+    opts = {
+  snippets = {
+    expand = function(snippet, _)
+      return require("luasnip").lsp_expand(snippet)
     end,
   },
+  sources = {
+    default = { "lsp", "path", "snippets", "buffer" },
+  },
+  appearance = {
+    nerd_font_variant = "mono",
+  },
+  completion = {
+    documentation = { auto_show = true },
+    ghost_text = { enabled = false },
+    accept = { auto_brackets = { enabled = true } },
+  },
+  keymap = {
+    preset = "enter",
+    ["<C-y>"] = { "select_and_accept" },
+    ["<Tab>"] = { "select_next", "fallback" },
+    ["<S-Tab>"] = { "select_prev", "fallback" },
+  },
+},
+opts_extend = { "sources.default", "sources.compat" },
+},
 }
 
