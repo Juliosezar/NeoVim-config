@@ -186,6 +186,11 @@ keymap('n', '<leader>wq', ':wq<CR>', opts)    -- Save and quit
 -- force quit
 keymap('n', '<leader>QQ', ':q!<CR>', opts)      -- Force quit
 
+vim.keymap.set("n", "<leader>qa", function()
+  vim.cmd("bufdo bd")      -- Closes all buffers
+  vim.cmd("qa")            -- Quits Neovim
+end, { desc = "Close all buffers and quit Neovim" })
+
 -- Make <Esc> exit terminal mode
 vim.keymap.set('t', 'jj', [[<C-\><C-n>]], opts)
 

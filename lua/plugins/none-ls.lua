@@ -1,6 +1,6 @@
 return {
   {
-    "nvimtools/none-ls.nvim", -- This is the updated null-ls
+    "nvimtools/none-ls.nvim",
     dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
       local null_ls = require("null-ls")
@@ -8,25 +8,14 @@ return {
         sources = {
           -- Python
           null_ls.builtins.formatting.black,
-          null_ls.builtins.diagnostics.ruff,
+        --  null_ls.builtins.diagnostics.flake8, -- Use flake8 as a fallback
 
           -- Rust
-          null_ls.builtins.formatting.rustfmt,
-          null_ls.builtins.diagnostics.clippy,
+        --  null_ls.builtins.formatting.rustfmt,
+        --  null_ls.builtins.diagnostics.clippy,
         },
       })
     end,
-  },
-
-  {
-    "jay-babu/mason-null-ls.nvim",
-    dependencies = { "williamboman/mason.nvim", "nvimtools/none-ls.nvim" },
-    config = function()
-      require("mason-null-ls").setup({
-        ensure_installed = { "black", "ruff", "rustfmt", "clippy" }, -- Auto-install
-        automatic_installation = true,
-      })
-    end,
-  },
+  }
 }
 

@@ -1,38 +1,42 @@
--- plugins/completion.lua
 return {
-  {
-    "saghen/blink.cmp",
-    version = "*",              -- track latest stable (you can pin "1.0")
-    dependencies = {
-      "rafamadriz/friendly-snippets",
-      { "saghen/blink.compat", optional = true },
-    },
-    event = "InsertEnter",
-    opts = {
-  snippets = {
-    expand = function(snippet, _)
-      return require("luasnip").lsp_expand(snippet)
-    end,
+  "hrsh7th/nvim-cmp",
+  dependencies = {
+    "hrsh7th/cmp-nvim-lsp",
+    "hrsh7th/cmp-buffer",
+    "hrsh7th/cmp-path",
+    "L3MON4D3/LuaSnip",
+    "saadparwaiz1/cmp_luasnip",
   },
-  sources = {
-    default = { "lsp", "path", "snippets", "buffer" },
-  },
-  appearance = {
-    nerd_font_variant = "mono",
-  },
-  completion = {
-    documentation = { auto_show = true },
-    ghost_text = { enabled = false },
-    accept = { auto_brackets = { enabled = true } },
-  },
-  keymap = {
-    preset = "enter",
-    ["<C-y>"] = { "select_and_accept" },
-    ["<Tab>"] = { "select_next", "fallback" },
-    ["<S-Tab>"] = { "select_prev", "fallback" },
-  },
-},
-opts_extend = { "sources.default", "sources.compat" },
-},
+
+  config = function()
+    local cmp = require("cmp")
+    local luasnip = require("luasnip")
+
+    require("luasnip.loaders.from_vscode").lazy_load()
+
+    cmp.setup({
+      snippet = {
+        expand = function(args)
+          luasnip.lsp_expand(args.body)
+        end,
+      },
+
+      mapping = cmp.mapping.preset.insert({
+        ["<C-Space>"] = cmp.mapping.complete(),
+        ["<CR>"] = cmp.mapping.confirm({ select = true }),
+        ["<Tab>"] = cmp.mapping.select_next_item(),
+        ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+      }),
+
+      sources = cmp.config.sources({
+        { name = "nvim_lsp" },
+        { name = "luasnip" },
+        { name = "buffer" },
+        { name = "path" },
+	  { name = "treesitter" },
+  { name = "nvim_lua" },
+      }),
+    })
+  end,
 }
 
