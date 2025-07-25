@@ -47,7 +47,7 @@ sudo apt-get install nodejs
 <p>first activate virtual env and then:</p>
 <pre><code>pip install django-stubs
 </code></pre>
-<p>Add <code>pyrightconfig.json</code> in your project root:</p>
+<p>Add <code>pyrightconfig.json</code> in your project root: (optional)</p>
 <pre><code>{
   "typeCheckingMode": "basic",
   "extraPaths": [
