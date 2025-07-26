@@ -14,6 +14,7 @@ return {
         "html",
         "cssls",
         "tsserver",
+	"htmldjango"
       },
     })
 

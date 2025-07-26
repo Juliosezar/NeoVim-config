@@ -79,7 +79,7 @@ vim.g.loaded_netrwPlugin = 1
 require("nvim-tree").setup({
   sort_by = "case_sensitive",
   view = {
-    width = 30,
+    width = 25,
   },
   renderer = {
     group_empty = true,
@@ -212,5 +212,21 @@ vim.keymap.set("n", "<leader>cx", ":CargoClean<CR>", opts)          -- Clean
 vim.keymap.set("n", "<leader>ca", ":CargoAdd<CR>", opts)            -- Add dependency
 -- vim.keymap.set("n", "<leader>crm", ":CargoRemove<CR>", opts)        -- Remove dependency
 vim.keymap.set("n", "<leader>cn", ":CargoNew<CR>", opts)            -- Create new project
+
+
+
+local set = vim.opt
+
+-- Always use spaces instead of literal tab characters
+set.expandtab = true
+
+-- Number of spaces inserted when <Tab> is pressed
+set.tabstop = 4
+
+-- Number of spaces used for auto-indent
+set.shiftwidth = 4
+
+-- Handle backspace/tab properly in insert mode
+set.softtabstop = 4
 
 
