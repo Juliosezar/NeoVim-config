@@ -6,7 +6,7 @@
 <h1 id="installation-guide">Installation Guide</h1>
 <h2 id="installing-nvim">installing Nvim</h2>
 <p>in ubuntu is better install nvim with snap or source or … rather than apt-get because we need version 0.8 or higher of nvim to work with Lazy.</p>
-<pre><code>sudo snap install nvim   //for deb\ubuntu
+<pre><code>sudo add-apt-repository ppa:neovim-ppa/unstable -y && sudo apt install neovim   //for deb\ubuntu
 sudo dnf install -y neovim python3-neovim   // for redhat\fedora
 </code></pre>
 <p>then create <code>/nvim/</code> directory in <code>~/.config/</code>:</p>
