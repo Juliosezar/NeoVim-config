@@ -20,7 +20,7 @@ cd ~/.config/nvim/
 <p>installing lua and luaRocks &amp; other dependencies:</p>
 <pre><code>sudo apt install lua5.4 liblua5.4-dev sqlite3 libsqlite3-dev npm python3.10-venv
 </code></pre>
-<code>sudo dnf install luajit-devel</code>
+<code>sudo dnf install luajit-devel luarocks</code>
 <p>replace 5.4 with version you want.</p>
 <p>installing luarocks:<br>
 based on <a href="https://luarocks.org">documentation</a>:</p>
