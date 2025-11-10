@@ -19,18 +19,7 @@ cd ~/.config/nvim/
 <h2 id="installing-dependencies">Installing dependencies</h2>
 <p>installing lua and luaRocks &amp; other dependencies:</p>
 <pre><code>sudo apt install npm python3.10-venv
-</code></pre>
-<p>installing luarocks:<br>
-based on <a href="https://luarocks.org">documentation</a>:</p>
-<pre><code>$ wget https://luarocks.org/releases/luarocks-3.12.2.tar.gz
-$ tar zxpf luarocks-3.12.2.tar.gz
-$ cd luarocks-3.12.2
-$ ./configure &amp;&amp; make &amp;&amp; sudo make install
-$ sudo luarocks install luasocket
-$ lua
-Lua 5.3.5 Copyright (C) 1994-2018 Lua.org, PUC-Rio
-&gt; require "socket"
-</code></pre>
+
 <h2 id="download--install-a-nerdfont">Download &amp; install a NerdFont</h2>
 <p><a href="https://www.nerdfonts.com/font-downloads">the official website</a><br>
 then change your terminal font to nerdfont; for rtl support use ‘konsole’ terminal.</p>
@@ -60,5 +49,5 @@ sudo apt-get install nodejs
 <p>Adjust the Python path to match your virtual environment.</p>
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTU4MzE1ODU1XX0=
+eyJoaXN0b3J5IjpbLTE2MzA0NzMyODRdfQ==
 -->
