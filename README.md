@@ -18,8 +18,7 @@ cd ~/.config/nvim/
 </code></pre>
 <h2 id="installing-dependencies">Installing dependencies</h2>
 <p>installing lua and luaRocks &amp; other dependencies:</p>
-<pre><code>sudo apt install npm python3.10-venv
-
+<pre><code>sudo apt install npm python3.10-venv</code></pre>
 <h2 id="download--install-a-nerdfont">Download &amp; install a NerdFont</h2>
 <p><a href="https://www.nerdfonts.com/font-downloads">the official website</a><br>
 then change your terminal font to nerdfont; for rtl support use ‘konsole’ terminal.</p>
@@ -49,5 +48,5 @@ sudo apt-get install nodejs
 <p>Adjust the Python path to match your virtual environment.</p>
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE2MzA0NzMyODRdfQ==
+eyJoaXN0b3J5IjpbMTAwODQ5NDI3NF19
 -->
