@@ -18,10 +18,8 @@ cd ~/.config/nvim/
 </code></pre>
 <h2 id="installing-dependencies">Installing dependencies</h2>
 <p>installing lua and luaRocks &amp; other dependencies:</p>
-<pre><code>sudo apt install lua5.4 liblua5.4-dev sqlite3 libsqlite3-dev npm python3.10-venv
+<pre><code>sudo apt install npm python3.10-venv
 </code></pre>
-<code>sudo dnf install luajit-devel luarocks</code>
-<p>replace 5.4 with version you want.</p>
 <p>installing luarocks:<br>
 based on <a href="https://luarocks.org">documentation</a>:</p>
 <pre><code>$ wget https://luarocks.org/releases/luarocks-3.12.2.tar.gz
@@ -61,3 +59,6 @@ sudo apt-get install nodejs
 </code></pre>
 <p>Adjust the Python path to match your virtual environment.</p>
 
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbLTU4MzE1ODU1XX0=
+-->
