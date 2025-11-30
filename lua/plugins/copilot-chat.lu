@@ -1,0 +1,45 @@
+return {
+  "CopilotC-Nvim/CopilotChat.nvim",
+  branch = "canary",
+  dependencies = {
+    { "zbirenbaum/copilot.lua" }, -- or github/copilot.vim
+    { "nvim-lua/plenary.nvim" }, -- for curl, log wrapper
+  },
+  opts = {
+    debug = false, -- Set to true to see response from Github Copilot API
+    -- See Configuration section for rest
+  },
+  keys = {
+    {
+      "<leader>ai",
+      ":CopilotChatToggle<CR>",
+      mode = {"n", "v"},
+      desc = "Toggle Copilot Chat"
+    },
+    {
+      "<leader>ex",
+      ":CopilotChatExplain<CR>",
+      mode = "v",
+      desc = "Explain Code"
+    },
+    {
+      "<leader>fix",
+      ":CopilotChatFix<CR>",
+      mode = "v",
+      desc = "Fix Code"
+    },
+  },
+  -- commands
+  cmd = {
+    "CopilotChat",
+    "CopilotChatOpen",
+    "CopilotChatClose",
+    "CopilotChatToggle",
+    "CopilotChatExplain",
+    "CopilotChatReview",
+    "CopilotChatFix",
+    "CopilotChatOptimize",
+    "CopilotChatDocs",
+    "CopilotChatTests",
+  },
+}

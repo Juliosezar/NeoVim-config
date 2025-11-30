@@ -2,7 +2,7 @@ require("config.lazy")
 require("mason").setup()
 -- require("config.cmp")
 require("mason-lspconfig").setup({
-  ensure_installed = { "pyright", "rust_analyzer" },
+  ensure_installed = { "pyrefly", "rust_analyzer" },
 })
 
 -- Add this to your init.lua or config file
@@ -29,7 +29,7 @@ vim.api.nvim_create_autocmd("VimEnter", {
   end,
   once = true,  -- Only run once on startup
 })
-
+vim.opt.scrolloff = 10
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     if vim.fn.argc() == 0 then

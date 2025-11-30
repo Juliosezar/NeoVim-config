@@ -8,8 +8,9 @@ return {
     require("mason-lspconfig").setup({
       ensure_installed = {
         "pyright",
+        "pyrefly",
         "rust_analyzer",
-	"ruff",
+	    "ruff",
         "jedi_language_server",
         "html",
         "cssls",
