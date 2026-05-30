@@ -1,0 +1,67 @@
+return {
+  "yetone/avante.nvim",
+  event = "VeryLazy",
+  lazy = false,
+  version = false, -- set this if you want to always pull the latest change
+  opts = {
+    -- 1. GLOBAL MAPPINGS (Triggers)
+    -- These keys work everywhere in Neovim
+    mappings = {
+      -- Open the sidebar to ask a question
+      ask = "<leader>aa", 
+      
+      -- Edit the selected code (Visual Mode)
+      edit = "<leader>ae", 
+      
+      -- Refresh the sidebar/context
+      refresh = "<leader>ar", 
+      
+      -- Toggle the sidebar visibility (Open/Close)
+      toggle = {
+        default = "<leader>at",
+        debug = "<leader>ad",
+        hint = "<leader>ah",
+        suggestion = "<leader>as",
+        repomap = "<leader>am",
+      },
+      
+      -- 2. DIFF MAPPINGS (While reviewing AI changes)
+      -- These only work when the "Diff View" is open
+      diff = {
+        ours = "co",         -- Keep your original code (Current/Ours)
+        theirs = "ct",       -- Accept AI code (Theirs)
+        all_theirs = "ca",   -- Accept ALL AI changes
+        both = "cb",         -- Keep both (Git conflict style)
+        cursor = "cc",       -- Choose the one under cursor
+        next = "]x",         -- Go to next change
+        prev = "[x",         -- Go to previous change
+      },
+      
+      -- 3. SUGGESTION MAPPINGS (Ghost text similar to Copilot)
+      suggestion = {
+        accept = "<M-l>",    -- Alt+l to accept ghost text
+        next = "<M-]>",      -- Next suggestion
+        prev = "<M-[>",      -- Previous suggestion
+        dismiss = "<C-]>",   -- Dismiss suggestion
+      },
+      
+      -- 4. SIDEBAR MAPPINGS (Inside the chat window)
+      sidebar = {
+        apply_all = "A",     -- Apply all code blocks in chat to file
+        apply_cursor = "a",  -- Apply the code block under cursor
+        switch_windows = "<Tab>", -- Jump between Chat and Code
+        reverse_switch_windows = "<S-Tab>",
+      },
+    },
+      provider = "openrouter",
+  vendors = {
+    openrouter = {
+      __inherited_from = "openai",
+      endpoint = "https://openrouter.ai/api/v1",
+      api_key_name = "OPENROUTER_API_KEY",
+      model = "moonshotai/kimi-k2:free", -- Recommended "smart" model
+    },
+  },
+    -- ... your provider config (OpenRouter) here ...
+  },
+}
