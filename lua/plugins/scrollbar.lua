@@ -7,10 +7,8 @@ return {
       desc = "Show or refresh scrollbar",
       pattern = "*",
       callback = function()
-        require("scrollbar").show()
+        pcall(function() require("scrollbar").show() end)
       end,
     })
   end,
-  -- no opts, no config
 }
-

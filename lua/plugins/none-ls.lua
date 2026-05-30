@@ -8,14 +8,13 @@ return {
         sources = {
           -- Python
           null_ls.builtins.formatting.black,
-        --  null_ls.builtins.diagnostics.flake8, -- Use flake8 as a fallback
+          null_ls.builtins.diagnostics.ruff,
 
           -- Rust
-        --  null_ls.builtins.formatting.rustfmt,
-        --  null_ls.builtins.diagnostics.clippy,
+          null_ls.builtins.formatting.rustfmt,
+          null_ls.builtins.diagnostics.clippy,
         },
       })
     end,
   }
 }
-
