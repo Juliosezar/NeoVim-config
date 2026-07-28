@@ -1,365 +1,215 @@
-if vim.g.vscode then
-    -- Sync clipboard with OS (Crucial for copying to/from browser)
-    vim.opt.clipboard = "unnamedplus" 
 
-    -- Search settings
-    vim.opt.ignorecase = true -- Ignore case when searching...
-    vim.opt.smartcase = true  -- ...unless you type a capital letter
-    vim.opt.hlsearch = true   -- Highlight search results
-    vim.opt.incsearch = true  -- Show search results as you type
+vim.opt.conceallevel = 2
+vim.opt.clipboard = "unnamedplus" 
+require("config.lazy")
+require("mason").setup()
+-- require("config.cmp")
+require("mason-lspconfig").setup({
+  ensure_installed = { "pyrefly", "rust_analyzer" },
+})
 
-    -- Set leader key to Space (Standard modern Vim preference)
-    vim.g.mapleader = " "
-    vim.g.maplocalleader = " "
-
-    -- 2. BOOTSTRAP LAZY.NVIM (Plugin Manager)
-    local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-    if not vim.loop.fs_stat(lazypath) then
-      vim.fn.system({
-        "git",
-        "clone",
-        "--filter=blob:none",
-        "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable", 
-        lazypath,
-      })
+-- Add this to your init.lua or config file
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    -- Get all buffer numbers
+    local buffers = vim.api.nvim_list_bufs()
+    
+    for _, buf in ipairs(buffers) do
+      -- Skip unloaded buffers
+      if vim.api.nvim_buf_is_loaded(buf) then
+        local buf_name = vim.api.nvim_buf_get_name(buf)
+        
+        -- Check if buffer name contains "NVIMTREE" (case insensitive)
+        if buf_name:upper():find("NvimTree") then
+          -- Forcefully wipe out the buffer
+          vim.cmd("silent! bwipeout " .. buf)
+        end
+      end
     end
-    vim.opt.rtp:prepend(lazypath)
+    
+    -- Optional: Notify how many buffers were cleaned
+    print("Cleaned up NVIMTREE buffers on startup")
+  end,
+  once = true,  -- Only run once on startup
+})
+vim.opt.fillchars:append({ vert = "│" })
+vim.api.nvim_create_autocmd("ColorScheme", {
+  callback = function()
+    vim.api.nvim_set_hl(0, "NvimTreeWinSeparator", { fg = "#444b5d", bg = "NONE" })
+  end,
+})
+vim.opt.scrolloff = 10
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    if vim.fn.argc() == 0 then
+      -- Prevent Alpha redraw crashes
+      vim.schedule(function()
+        local alpha = require("alpha")
+        alpha.start()
+      end)
+    end
+  end,
+})
 
-    -- 3. PLUGINS
-    require("lazy").setup({
-        -- A. Text Manipulation (Essential)
-        {
-            "kylechui/nvim-surround",
-            version = "*", -- Use for stability; omit to use `main` branch for the latest features
-            event = "VeryLazy",
-            config = function()
-                require("nvim-surround").setup({
-                    -- Configuration here, or leave empty to use defaults
-                })
-            end
-        },
-
-    -- B. Comments (VS Code has Ctrl+/, but gc is muscle memory)
-        {
-            'numToStr/Comment.nvim',
-            config = function()
-                require('Comment').setup()
-            end
-        },
-
-        -- C. Advanced Motion (Like EasyMotion but better)
-        -- Hit 's' then two characters to jump anywhere on screen
-        {
-            "folke/flash.nvim",
-            event = "VeryLazy",
-            opts = {},
-            keys = {
-                { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-                { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-            },
-        },
-    })
-
-    local map = vim.keymap.set
-        
-        -- Function to call VS Code commands easily
-        local function code_action(cmd)
-            return function() vim.fn.VSCodeNotify(cmd) end
-        end
-
-        -- --- NAVIGATION ---
-        -- Simulate switching splits using Ctrl+w + h/j/k/l
-        map('n', '<leader><leader>h', code_action('workbench.action.navigateLeft'))
-        map('n', '<leader><leader>j', code_action('workbench.action.navigateDown'))
-        map('n', '<leader><leader>k', code_action('workbench.action.navigateUp'))
-        map('n', '<leader><leader>l', code_action('workbench.action.navigateRight'))
-        
-        -- Navigate Tabs (Buffers) using H and L
-        map('n', '<leader>h', code_action('workbench.action.previousEditorInGroup'))
-        map('n', '<leader>l', code_action('workbench.action.nextEditorInGroup'))
-
-        -- --- CODING ACTIONS (Python/Django friendly) ---
-        -- Go to Definition (Replaces built-in gd)
-        map('n', 'gd', code_action('editor.action.revealDefinition'))
-        
-        -- Go to References (Find where this function is used)
-        map('n', 'gr', code_action('editor.action.referenceSearch.trigger'))
-        
-        -- Rename Symbol (F2 in VS Code, but <leader>rn is Vim style)
-        map('n', '<leader>rn', code_action('editor.action.rename'))
-        
-        -- Format Document (Uses Black/Ruff if installed)
-        map('n', '<leader>f', code_action('editor.action.formatDocument'))
-        
-        -- Show Hover (Documentation) - like pressing K in Vim
-        map('n', 'K', code_action('editor.action.showHover'))
-
-        -- --- EDITOR ACTIONS ---
-        -- Save file
-        map('n', '<leader>w', code_action('workbench.action.files.save'))
-        
-        -- Close file (Buffer)
-        map('n', '<leader>q', code_action('workbench.action.closeActiveEditor'))
-        
-        -- Toggle File Explorer (Sidebar)
-
-        map('n', '<leader>e', code_action('workbench.files.action.focusFilesExplorer'))
-        -- --- JUPYTER NOTEBOOK SPECIFICS ---
-        -- Create a new cell below (similar to 'o')
-        map('n', '<leader>o', code_action('notebook.cell.insertCodeCellBelow'))
-        
-        -- Delete current cell
-        map('n', '<leader>dd', code_action('notebook.cell.delete'))
-        
-        -- Move cell up/down
-        map('n', '<leader>j', code_action('notebook.cell.moveDown'))
-        map('n', '<leader>k', code_action('notebook.cell.moveUp'))
-        map('n', '<leader>wv', code_action('workbench.action.splitEditorRight'))
-        map('n', '<leader>ws', code_action('workbench.action.splitEditorDown'))
-        map('n', '<leader>t', code_action('workbench.action.terminal.toggleTerminal'))
-
-        -- Map 'jj' to Escape in Insert mode
-        vim.keymap.set("i", "jj", "<Esc>")
-
-        map('n', '<leader>qa', code_action('workbench.action.closeAllEditors'))
+local keymap = vim.keymap.set
+local opts = { noremap = true, silent = true }
+-- Show diagnostics in a floating window
+keymap("n", "<leader>rl", vim.diagnostic.open_float, { desc = "Line diagnostics" })
+-- Show all diagnostics in location list
+keymap("n", "<leader>rd", vim.diagnostic.setloclist, { desc = "Diagnostic list" })
 
 
+vim.g.catppuccin_flavour = "mocha"
+vim.cmd.colorscheme "catppuccin"
+require("notify").setup({
+  background_colour = "#1e1e2e",  -- or "#000000" or a better match to your theme
+}) 
+-- Set transparent background (works with most themes)
+vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
+vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+
+vim.o.number = true
+vim.o.relativenumber = true
+
+-- Exit insert mode by typing 'jk'
+vim.keymap.set("i", "jk", "<Esc>")
+vim.keymap.set("i", "jj", "<Esc>")
 
 
-
-else -- if not vscode
-
-    vim.opt.clipboard = "unnamedplus" 
-    require("config.lazy")
-    require("mason").setup()
-    -- require("config.cmp")
-    require("mason-lspconfig").setup({
-      ensure_installed = { "pyrefly", "rust_analyzer" },
-    })
-
-    -- Add this to your init.lua or config file
-    vim.api.nvim_create_autocmd("VimEnter", {
-      callback = function()
-        -- Get all buffer numbers
-        local buffers = vim.api.nvim_list_bufs()
-        
-        for _, buf in ipairs(buffers) do
-          -- Skip unloaded buffers
-          if vim.api.nvim_buf_is_loaded(buf) then
-            local buf_name = vim.api.nvim_buf_get_name(buf)
-            
-            -- Check if buffer name contains "NVIMTREE" (case insensitive)
-            if buf_name:upper():find("NvimTree") then
-              -- Forcefully wipe out the buffer
-              vim.cmd("silent! bwipeout " .. buf)
-            end
-          end
-        end
-        
-        -- Optional: Notify how many buffers were cleaned
-        print("Cleaned up NVIMTREE buffers on startup")
-      end,
-      once = true,  -- Only run once on startup
-    })
-    vim.opt.scrolloff = 10
-    vim.api.nvim_create_autocmd("VimEnter", {
-      callback = function()
-        if vim.fn.argc() == 0 then
-          -- Prevent Alpha redraw crashes
-          vim.schedule(function()
-            local alpha = require("alpha")
-            alpha.start()
-          end)
-        end
-      end,
-    })
-
-    local keymap = vim.keymap.set
-    local opts = { noremap = true, silent = true }
-    -- Show diagnostics in a floating window
-    keymap("n", "<leader>rl", vim.diagnostic.open_float, { desc = "Line diagnostics" })
-    -- Show all diagnostics in location list
-    keymap("n", "<leader>rd", vim.diagnostic.setloclist, { desc = "Diagnostic list" })
+-- Exit visual mode with 'jk'
+vim.keymap.set("v", "jk", "<Esc>")
 
 
-    vim.g.catppuccin_flavour = "mocha"
-    vim.cmd.colorscheme "catppuccin"
-    require("notify").setup({
-      background_colour = "#1e1e2e",  -- or "#000000" or a better match to your theme
-    }) 
-    -- Set transparent background (works with most themes)
-    vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-    vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+-- Keybindings
+vim.keymap.set("n", "<leader>e", function()
+  local nvim_tree = require("nvim-tree.api")
+  if nvim_tree.tree.is_visible() then
+    nvim_tree.tree.focus()  -- Focus if already open
+  else
+    nvim_tree.tree.open()   -- Open if closed
+  end
+end, { desc = "Focus/Open Nvim-tree" })
 
-    vim.o.number = true
-    vim.o.relativenumber = true
+local keymap = vim.keymap.set
+local opts = { noremap = true, silent = true }
 
-    -- Exit insert mode by typing 'jk'
-    vim.keymap.set("i", "jk", "<Esc>")
-    vim.keymap.set("i", "jj", "<Esc>")
+-- Set cursor to bar in Insert mode, block in Normal mode
+vim.o.guicursor = "v-c-sm-i-ci-ve-r-cr-o:ver25"
 
+    
+-- Splits
+keymap('n', '<leader>wv', '<C-w>v', opts) -- vertical split
+keymap('n', '<leader>ws', '<C-w>s', opts) -- horizontal split
 
-    -- Exit visual mode with 'jk'
-    vim.keymap.set("v", "jk", "<Esc>")
+-- Movement
+keymap('n', '<leader><leader>h', '<C-w>h', opts)
+keymap('n', '<leader><leader>l', '<C-w>l', opts)
+keymap('n', '<leader><leader>j', '<C-w>j', opts)
+keymap('n', '<leader><leader>k', '<C-w>k', opts)
 
-    -- neotree
-    -- Disable netrw (strongly recommended)
-    vim.g.loaded_netrw = 1
-    vim.g.loaded_netrwPlugin = 1
+-- Close/Quit
+keymap('n', '<leader>wd', '<C-w>q', opts)
+keymap('n', '<leader>wc', '<C-w>c', opts)
 
-    -- Setup with options
-    require("nvim-tree").setup({
-      sort_by = "case_sensitive",
-      view = {
-        width = 25,
-      },
-      renderer = {
-        group_empty = true,
-      },
-      filters = {
-        dotfiles = false, -- Show hidden files
-      },
-    })
-
-    -- Keybindings
-    vim.keymap.set("n", "<leader>e", function()
-      local nvim_tree = require("nvim-tree.api")
-      if nvim_tree.tree.is_visible() then
-        nvim_tree.tree.focus()  -- Focus if already open
-      else
-        nvim_tree.tree.open()   -- Open if closed
-      end
-    end, { desc = "Focus/Open Nvim-tree" })
-
-    local keymap = vim.keymap.set
-    local opts = { noremap = true, silent = true }
-
-    -- Set cursor to bar in Insert mode, block in Normal mode
-    vim.o.guicursor = "v-c-sm-i-ci-ve-r-cr-o:ver25"
-
-        
-    -- Splits
-    keymap('n', '<leader>wv', '<C-w>v', opts) -- vertical split
-    keymap('n', '<leader>ws', '<C-w>s', opts) -- horizontal split
-
-    -- Movement
-    keymap('n', '<leader><leader>h', '<C-w>h', opts)
-    keymap('n', '<leader><leader>l', '<C-w>l', opts)
-    keymap('n', '<leader><leader>j', '<C-w>j', opts)
-    keymap('n', '<leader><leader>k', '<C-w>k', opts)
-
-    -- Close/Quit
-    keymap('n', '<leader>wq', '<C-w>q', opts)
-    keymap('n', '<leader>wc', '<C-w>c', opts)
-
-    -- Resize
-    keymap('n', '<leader>w=', '<C-w>=', opts) -- equal size
-    keymap('n', '<leader>w_', '<C-w>_', opts) -- max height
-    keymap('n', '<leader>w|', '<C-w>|', opts) -- max width
+-- Resize
+keymap('n', '<leader>w=', '<C-w>=', opts) -- equal size
+keymap('n', '<leader>w_', '<C-w>_', opts) -- max height
+keymap('n', '<leader>w|', '<C-w>|', opts) -- max width
 
 
-    -- Resize height
-    --
-    keymap('n', '<leader>r<Up>', ':resize +4<CR>', opts)     -- taller
-    keymap('n', '<leader>r<Down>', ':resize -4<CR>', opts)   -- shorter
+-- Resize height
+--
+keymap('n', '<leader>r<Up>', ':resize +4<CR>', opts)     -- taller
+keymap('n', '<leader>r<Down>', ':resize -4<CR>', opts)   -- shorter
 
-    -- Resize width
-    keymap('n', '<leader>r<Right>', ':vertical resize +4<CR>', opts)  -- wider
-    keymap('n', '<leader>r<Left>', ':vertical resize -4<CR>', opts)   -- narrower
-
-
-    vim.keymap.set('n', '<leader>t', function()
-      vim.cmd("split | terminal")
-    end, { noremap = true, silent = true, desc = "Open terminal in horizontal split" })
-    vim.keymap.set('n', '<leader>tv', function()
-      vim.cmd("vsplit | terminal")
-    end, { noremap = true, silent = true, desc = "Open terminal in vertical split" })
+-- Resize width
+keymap('n', '<leader>r<Right>', ':vertical resize +4<CR>', opts)  -- wider
+keymap('n', '<leader>r<Left>', ':vertical resize -4<CR>', opts)   -- narrower
 
 
-    -- Save
-    keymap('n', '<leader>ww', ':w<CR>', opts)     -- Save file
-    -- Quit
-    vim.keymap.set("n", "<leader>qq", function()
-      -- gather all listed buffers
-      local bufs = vim.tbl_filter(function(b)
-        return vim.api.nvim_buf_is_valid(b) and vim.fn.buflisted(b) == 1
-      end, vim.api.nvim_list_bufs())
-
-      local cur = vim.api.nvim_get_current_buf()
-
-      local function buf_is_term(buf)
-        return vim.api.nvim_buf_get_option(buf, "buftype") == "terminal"
-      end
-
-      if #bufs <= 1 then
-        -- only one buffer open → close it and quit Neovim
-        if buf_is_term(cur) then
-          vim.cmd("bd! " .. cur)  -- force delete terminal buffer
-        else
-          vim.cmd("bd! " .. cur)
-        end
-        vim.cmd("qa")
-      else
-        -- multiple buffers → go to last, then delete current
-        vim.cmd("bp")  -- switch to previous buffer
-        local prev_buf = vim.fn.bufnr("#")  -- alternate buffer
-
-        if buf_is_term(prev_buf) then
-          vim.cmd("bd! " .. prev_buf)
-        else
-          vim.cmd("bd! " .. prev_buf)
-        end
-      end
-    end, { desc = "Close buffer or exit Neovim if last" })
+vim.keymap.set('n', '<leader>t', function()
+  vim.cmd("split | terminal")
+end, { noremap = true, silent = true, desc = "Open terminal in horizontal split" })
+vim.keymap.set('n', '<leader>tv', function()
+  vim.cmd("vsplit | terminal")
+end, { noremap = true, silent = true, desc = "Open terminal in vertical split" })
 
 
-    -- Save and Quit
-    keymap('n', '<leader>wq', ':wq<CR>', opts)    -- Save and quit
-    -- force quit
-    keymap('n', '<leader>QQ', ':q!<CR>', opts)      -- Force quit
+-- Save
+keymap('n', '<leader>ww', ':w<CR>', opts)     -- Save file
+-- Quit
+vim.keymap.set("n", "<leader>qq", function()
+  -- gather all listed buffers
+  local bufs = vim.tbl_filter(function(b)
+    return vim.api.nvim_buf_is_valid(b) and vim.fn.buflisted(b) == 1
+  end, vim.api.nvim_list_bufs())
 
-    vim.keymap.set("n", "<leader>qa", function()
-      vim.cmd("bufdo bd")      -- Closes all buffers
-      vim.cmd("qa")            -- Quits Neovim
-    end, { desc = "Close all buffers and quit Neovim" })
+  local cur = vim.api.nvim_get_current_buf()
 
-    -- Make <Esc> exit terminal mode
-    vim.keymap.set('t', 'jj', [[<C-\><C-n>]], opts)
+  local function buf_is_term(buf)
+    return vim.api.nvim_buf_get_option(buf, "buftype") == "terminal"
+  end
+
+  if #bufs <= 1 then
+    -- only one buffer open → close it and quit Neovim
+    if buf_is_term(cur) then
+      vim.cmd("bd! " .. cur)  -- force delete terminal buffer
+    else
+      vim.cmd("bd! " .. cur)
+    end
+    vim.cmd("qa")
+  else
+    -- multiple buffers → go to last, then delete current
+    vim.cmd("bp")  -- switch to previous buffer
+    local prev_buf = vim.fn.bufnr("#")  -- alternate buffer
+
+    if buf_is_term(prev_buf) then
+      vim.cmd("bd! " .. prev_buf)
+    else
+      vim.cmd("bd! " .. prev_buf)
+    end
+  end
+end, { desc = "Close buffer or exit Neovim if last" })
 
 
-    local opts = { noremap = true, silent = true }
+-- Save and Quit
+keymap('n', '<leader>wq', ':wq<CR>', opts)    -- Save and quit
+-- force quit
+keymap('n', '<leader>QQ', ':q!<CR>', opts)      -- Force quit
 
-    -- General Rust/Cargo commands
-    vim.keymap.set("n", "<leader>cb", ":CargoBuild<CR>", opts)          -- Build
-    vim.keymap.set("n", "<leader>cr", ":CargoRunTerm<CR>", opts)            -- Run
-    vim.keymap.set("n", "<leader>ct", ":CargoTest<CR>", opts)           -- Test
-    vim.keymap.set("n", "<leader>cc", ":CargoCheck<CR>", opts)          -- Check
-    vim.keymap.set("n", "<leader>cl", ":CargoClippy<CR>", opts)         -- Clippy
-    vim.keymap.set("n", "<leader>cf", ":CargoFmt<CR>", opts)            -- Format
-    vim.keymap.set("n", "<leader>cu", ":CargoUpdate<CR>", opts)         -- Update
-    vim.keymap.set("n", "<leader>cd", ":CargoDoc<CR>", opts)            -- Generate docs
-    vim.keymap.set("n", "<leader>cx", ":CargoClean<CR>", opts)          -- Clean
+vim.keymap.set("n", "<leader>qa", function()
+  vim.cmd("bufdo bd")      -- Closes all buffers
+  vim.cmd("qa")            -- Quits Neovim
+end, { desc = "Close all buffers and quit Neovim" })
 
-    -- Interactive commands (e.g., add/remove dependencies)
-    vim.keymap.set("n", "<leader>ca", ":CargoAdd<CR>", opts)            -- Add dependency
-    -- vim.keymap.set("n", "<leader>crm", ":CargoRemove<CR>", opts)        -- Remove dependency
-    vim.keymap.set("n", "<leader>cn", ":CargoNew<CR>", opts)            -- Create new project
+-- Make <Esc> exit terminal mode
+vim.keymap.set('t', 'jj', [[<C-\><C-n>]], opts)
 
 
 
-    local set = vim.opt
+local set = vim.opt
 
-    -- Always use spaces instead of literal tab characters
-    set.expandtab = true
+-- Always use spaces instead of literal tab characters
+set.expandtab = true
 
-    -- Number of spaces inserted when <Tab> is pressed
-    set.tabstop = 4
+-- Number of spaces inserted when <Tab> is pressed
+set.tabstop = 4
 
-    -- Number of spaces used for auto-indent
-    set.shiftwidth = 4
+-- Number of spaces used for auto-indent
+set.shiftwidth = 4
 
-    -- Handle backspace/tab properly in insert mode
-    set.softtabstop = 4
+-- Handle backspace/tab properly in insert mode
+set.softtabstop = 4
+
+
+-- Silence "vim.lsp.get_buffers_by_client_id() is deprecated" from upstream plugins
+-- that haven't migrated yet (nvim-lspconfig, nvim-navbuddy)
+vim.lsp.get_buffers_by_client_id = function(client_id)
+  local bufs = {}
+  for _, client in ipairs(vim.lsp.get_clients({ id = client_id })) do
+    for _, buf in ipairs(client.attached_buffers or {}) do
+      table.insert(bufs, buf)
+    end
+  end
+  return bufs
 end
-

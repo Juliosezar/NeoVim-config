@@ -9,10 +9,9 @@ return {
   end,
   config = function()
     require('barbar').setup {
-	exclude_ft   = { "" },
-      	exclude_name = { "" },
-		}
-
+      exclude_ft   = { "" },
+      exclude_name = { "" },
+    }
 
     -- Navigation
     vim.keymap.set("n", "<leader>h", "<cmd>BufferPrevious<cr>", { desc = "Prev Buffer" })
@@ -24,9 +23,8 @@ return {
 
     -- Close buffers
     vim.keymap.set("n", "<leader>bc", "<cmd>bd!<cr>", { desc = "Close Buffer" })
-    vim.keymap.set("n", "<leader><bl", "<cmd>BufferCloseLeft<cr>", { desc = "Close Buffers to Left" })
-    vim.keymap.set("n", "<leader><br", "<cmd>BufferCloseRight<cr>", { desc = "Close Buffers to Right" })
+    vim.keymap.set("n", "<leader>bL", "<cmd>BufferCloseLeft<cr>", { desc = "Close Buffers Left" })
+    vim.keymap.set("n", "<leader>bR", "<cmd>BufferCloseRight<cr>", { desc = "Close Buffers Right" })
     vim.keymap.set("n", "<leader>bo", "<cmd>BufOnly<cr>", { desc = "Close All But Current" })
   end
 }
-

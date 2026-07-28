@@ -1,9 +1,7 @@
 return {
   "mrcjkb/rustaceanvim",
-  version = "^5",
   ft = { "rust" },
   init = function()
-    -- Disable task auto-detection so cargo.nvim still works for explicit cargo commands
     vim.g.rustaceanvim = {
       tools = {
         inlay_hints = {
@@ -18,13 +16,13 @@ return {
       },
       server = {
         on_attach = function(_, bufnr)
-          vim.keymap.set("n", "<leader>ca", function()
+          vim.keymap.set("n", "<leader>ra", function()
             vim.cmd.RustLsp("codeAction")
           end, { silent = true, buffer = bufnr, desc = "Rust Code Action" })
-          vim.keymap.set("n", "<leader>cr", function()
+          vim.keymap.set("n", "<leader>rr", function()
             vim.cmd.RustLsp("runnables")
           end, { silent = true, buffer = bufnr, desc = "Rust Runnables" })
-          vim.keymap.set("n", "<leader>ce", function()
+          vim.keymap.set("n", "<leader>re", function()
             vim.cmd.RustLsp("expandMacro")
           end, { silent = true, buffer = bufnr, desc = "Expand Macro" })
           vim.keymap.set("n", "K", function()
@@ -39,9 +37,7 @@ return {
           },
         },
       },
-      dap = {
-        -- DAP will be configured separately via nvim-dap
-      },
+      dap = {},
     }
   end,
 }

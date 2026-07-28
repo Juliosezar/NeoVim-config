@@ -17,8 +17,8 @@ return {
     })
 
     -- Optional: Keymaps
-    vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "Open all folds" })
-    vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "Close all folds" })
+    vim.keymap.set("n", "zo", require("ufo").openAllFolds, { desc = "Open all folds" })
+    vim.keymap.set("n", "zc", require("ufo").closeAllFolds, { desc = "Close all folds" })
   end
 }
 

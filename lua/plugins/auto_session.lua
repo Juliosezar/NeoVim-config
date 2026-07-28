@@ -13,7 +13,7 @@ return {
 
     -- Optional keymaps
     vim.keymap.set("n", "<leader>ss", "<cmd>SessionSave<CR>", { desc = "Save session" })
-    vim.keymap.set("n", "<leader>sr", "<cmd>SessionRestore<CR>", { desc = "Restore session" })
+    vim.keymap.set("n", "<leader>sR", "<cmd>SessionRestore<CR>", { desc = "Restore session" })
     vim.keymap.set("n", "<leader>sd", "<cmd>SessionDelete<CR>", { desc = "Delete session" })
   end
 }
