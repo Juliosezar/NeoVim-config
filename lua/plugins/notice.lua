@@ -4,7 +4,6 @@ return {
     dependencies = {
         "MunifTanjim/nui.nvim",
         "rcarriga/nvim-notify",
-        -- "nvim-treesiter/nvim-treesiter",
         "nvim-treesitter/nvim-treesitter",
     },
     config = function()

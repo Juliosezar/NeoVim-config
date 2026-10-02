@@ -3,10 +3,6 @@ vim.opt.conceallevel = 2
 vim.opt.clipboard = "unnamedplus" 
 require("config.lazy")
 require("mason").setup()
--- require("config.cmp")
-require("mason-lspconfig").setup({
-  ensure_installed = { "pyrefly", "rust_analyzer" },
-})
 
 -- Add this to your init.lua or config file
 vim.api.nvim_create_autocmd("VimEnter", {
@@ -213,3 +209,44 @@ vim.lsp.get_buffers_by_client_id = function(client_id)
   end
   return bufs
 end
+
+
+
+_G.copy_project_tree = function()
+  -- 1. Check if we are in a git repo
+  local handle_git = io.popen("git rev-parse --is-inside-work-tree 2>/dev/null")
+  local is_git = handle_git:read("*a"):match("true")
+  handle_git:close()
+
+  local cmd
+  if is_git then
+    -- This command combines:
+    -- A) Git tracked & untracked files/dirs (git ls-files)
+    -- B) All directories that are NOT ignored by git (even if empty)
+    -- C) Any .env files (even if ignored)
+    cmd = [[
+      (
+        git ls-files --cached --others --exclude-standard --directory --full-name | sed 's|^|./|';
+        find . -type d -not -path '*/.*' -not -path '*/node_modules*' | while read -r dir; do
+          if ! git check-ignore -q "$dir"; then echo "$dir"; fi
+        done;
+        find . -name ".env*" -not -path "*/node_modules/*"
+      ) | sort -u | tree --fromfile .
+    ]]
+  else
+    -- Fallback for non-git projects
+    cmd = "tree -I 'node_modules|.git' -a"
+  end
+
+  local result = vim.fn.system(cmd)
+
+  if result ~= "" then
+    vim.fn.setreg("+", result)
+    vim.notify("Project tree copied (with empty dirs & .env)", vim.log.levels.INFO)
+  else
+    vim.notify("Error: 'tree' failed. Make sure 'tree' is installed.", vim.log.levels.ERROR)
+  end
+end
+
+-- Map to <leader>cp
+vim.keymap.set("n", "<leader>cp", "<cmd>lua copy_project_tree()<CR>", { desc = "Copy Project Tree" })
