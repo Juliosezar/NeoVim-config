@@ -1,79 +1,87 @@
 return {
   {
     "nvim-lualine/lualine.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" }, -- Optional: for file icons
-    config = function()
-      require("lualine").setup({
-        options = {
-          icons_enabled = true,
-          theme = "auto",
-          component_separators = { left = "", right = "" },
-          section_separators = { left = "", right = "" },
-          disabled_filetypes = {
-            statusline = {},
-            winbar = {},
+    event = "VeryLazy",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    opts = {
+      options = {
+        theme = "auto",
+        globalstatus = true,
+        component_separators = "",
+        section_separators = { left = "|", right = "|" },
+        disabled_filetypes = {
+          statusline = { "alpha" },
+        },
+        refresh = {
+          statusline = 100,
+          tabline = 100,
+          winbar = 100,
+        },
+      },
+      sections = {
+        lualine_a = {
+          { "mode", icon = "", separator = { left = " ", right = " " }, padding = { left = 1, right = 1 } },
+        },
+        lualine_b = {
+          { "branch", icon = "" },
+          {
+            "diff",
+            symbols = { added = " ", modified = " ", removed = " " },
           },
-          ignore_focus = {},
-          always_divide_middle = true,
-          globalstatus = false,
-          refresh = {
-            statusline = 1000,
-            tabline = 1000,
-            winbar = 1000,
+          {
+            "diagnostics",
+            symbols = { error = " ", warn = " ", info = " ", hint = " " },
           },
         },
-        sections = {
-          lualine_a = { "mode" },
-          lualine_b = { "branch", "diff", "diagnostics" },
-          lualine_c = { "filename" },
-          lualine_x = {
-            "encoding",
-            "fileformat",
-            "filetype",
+        lualine_c = {
+          { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+          {
+            "filename",
+            path = 1, -- relative path (e.g. src/main.py)
+            symbols = { modified = " ●", readonly = " ", unnamed = "[No Name]" },
+          },
+        },
+        lualine_x = {
+          {
             function()
-              return require("NeoComposer.ui").status_recording()
+              return package.loaded["NeoComposer"] and require("NeoComposer.ui").status_recording() or ""
             end,
           },
-          lualine_y = { "progress" },
-          lualine_z = { "location" },
+          {
+            function()
+              local clients = vim.lsp.get_clients({ bufnr = 0 })
+              if #clients == 0 then
+                return ""
+              end
+              local names = {}
+              for _, c in ipairs(clients) do
+                table.insert(names, c.name)
+              end
+              return "  " .. table.concat(names, ", ")
+            end,
+          },
+          {
+            "encoding",
+            cond = function()
+              return vim.bo.fileencoding ~= "" and vim.bo.fileencoding ~= "utf-8"
+            end,
+          },
+          {
+            "fileformat",
+            cond = function()
+              return vim.bo.fileformat ~= "unix"
+            end,
+          },
         },
-        inactive_sections = {
-          lualine_a = {},
-          lualine_b = {},
-          lualine_c = { "filename" },
-          lualine_x = { "location" },
-          lualine_y = {},
-          lualine_z = {},
+        lualine_y = {
+          { "progress", padding = { left = 1, right = 1 } },
         },
-        tabline = {},
-        winbar = {},
-        inactive_winbar = {},
-        extensions = {},
-      })
-    end,
+        lualine_z = {
+          { "location", separator = { left = " ", right = " " }, padding = { left = 1, right = 1 } },
+        },
+      },
+      extensions = { "nvim-tree", "lazy", "mason" },
+    },
   },
 
-  {
-    "ecthelionvi/NeoComposer.nvim",
-    dependencies = { "kkharji/sqlite.lua" },
-    config = function()
-      require("NeoComposer").setup({
-        keymaps = {
-          play_macro = "Q",
-          yank_macro = "yq",
-          stop_macro = "cq",
-          toggle_record = "q",
-        },
-        notify = true,
-        delay_timer = 150,
-        highlight = {
-          on_play = true,
-          on_record = true,
-          clear = 500,
-        },
-      })
-    end,
-    event = "VeryLazy",
-  },
 }
-

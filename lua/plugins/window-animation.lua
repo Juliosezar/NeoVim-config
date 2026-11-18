@@ -9,7 +9,7 @@ return {
     vim.o.winminwidth = 10
     vim.o.equalalways = false
     require('windows').setup()
-    vim.keymap.set('n', '<leader>mm', '<cmd>WindowsMaximize<CR>')
+    vim.keymap.set("n", "<leader>mm", "<cmd>WindowsMaximize<CR>", { desc = "Maximize window" })
   end
 
 }

@@ -1,7 +1,12 @@
 return {
-  { "tweekmonster/django-plus.vim", -- A better maintained alternative
-  ft = "python",},  -- useful for Django templates, navigation, model/forms/utils
-  { "folke/neodev.nvim", opts = {} }, -- better Lua dev for nvim
-
+  { "tweekmonster/django-plus.vim", ft = "python" },
+  {
+    "folke/lazydev.nvim",
+    ft = "lua",
+    opts = {
+      library = {
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+      },
+    },
+  },
 }
-

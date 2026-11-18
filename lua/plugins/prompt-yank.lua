@@ -1,7 +1,7 @@
 return {
     "polacekpavel/prompt-yank.nvim",
     -- Load the plugin only when you actually call the command or the keymaps
-    cmd = { "PromptYank" }, 
+    cmd = { "PromptYank" },
     keys = {
         -- Set up quick hotkeys (change these to whatever feels comfortable!)
     { "<Leader>yp", mode = { "n", "v" }, desc = "PromptYank: file/selection" },
@@ -19,14 +19,13 @@ return {
     config = function()
         require("prompt-yank").setup({
             -- Options are 'markdown' or 'xml' (Claude handles XML exceptionally well)
-            style = "markdown", 
-            
+            style = "markdown",
             -- Strips out empty lines or comments if you want to save context tokens
             strip_empty_lines = true,
             strip_comments = false,
             
             -- Automatically paths relative to your git root/working directory
-            file_path_type = "relative", 
+            file_path_type = "relative",
         })
     end,
 }

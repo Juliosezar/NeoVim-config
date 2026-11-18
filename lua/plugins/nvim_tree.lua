@@ -23,17 +23,20 @@ return {
           local combined_output = ""
           
           -- Loop over all paths, process via prompt-yank's core action script
+          -- Loop over all paths, process via prompt-yank's core action script
           for _, node in ipairs(marks) do
             if node.absolute_path and vim.fn.filereadable(node.absolute_path) == 1 then
-              -- Create a temporary, unlisted hidden buffer to read file context cleanly
               local bufnr = vim.fn.bufadd(node.absolute_path)
-              vim.fn.bufload(bufnr)
-              
+              local keep_buf = vim.api.nvim_buf_is_loaded(bufnr) or vim.bo[bufnr].buflisted
+              if not vim.api.nvim_buf_is_loaded(bufnr) then
+                vim.fn.bufload(bufnr)
+              end
+
               -- Explicitly invoke prompt-yank's backend engine on the buffer
               local status, result = pcall(function()
                 return require("prompt-yank.actions").yank({ bufnr = bufnr })
               end)
-              
+
               if status and type(result) == "string" then
                 combined_output = combined_output .. result .. "\n\n"
               else
@@ -42,13 +45,16 @@ return {
                 local extension = vim.fn.fnamemodify(node.absolute_path, ":e")
                 local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
                 local content = table.concat(lines, "\n")
-                
+
                 combined_output = combined_output .. "### File: `" .. relative_path .. "`\n```" .. extension .. "\n" .. content .. "\n```\n\n"
               end
-            end
-          end
 
-          -- Copy the completed context block cleanly to your system clipboard
+              -- Delete the temporary buffer if it wasn't already open
+              if not keep_buf and vim.api.nvim_buf_is_valid(bufnr) then
+                vim.api.nvim_buf_delete(bufnr, { force = true })
+              end
+            end
+          end          -- Copy the completed context block cleanly to your system clipboard
           vim.fn.setreg("+", combined_output)
           
           -- --- TOKEN ESTIMATION LOGIC ---

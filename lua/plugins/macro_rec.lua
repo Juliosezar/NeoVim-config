@@ -1,8 +1,8 @@
-return {
-  "ecthelionvi/NeoComposer.nvim",
-  dependencies = { "kkharji/sqlite.lua" }, -- Required dependency
-  config = function()
-    require("NeoComposer").setup({
+return  {
+    "ecthelionvi/NeoComposer.nvim",
+    event = "VeryLazy",
+    dependencies = { "kkharji/sqlite.lua" },
+    opts = {
       keymaps = {
         play_macro = "Q",
         yank_macro = "yq",
@@ -16,11 +16,5 @@ return {
         on_record = true,
         clear = 500,
       },
-    })
-
-    -- Optional: assign to global for statusline use
-    vim.g.neo_composer_recording_status = require("NeoComposer.ui").status_recording()
-  end,
-  event = "VeryLazy", -- or any appropriate lazy loading trigger
-}
-
+    },
+  }

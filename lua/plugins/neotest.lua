@@ -13,7 +13,6 @@ return {
       adapters = {
         require("neotest-python")({
           runner = "pytest",
-          python = ".venv/bin/python",
         }),
         require("neotest-rust"),
       },

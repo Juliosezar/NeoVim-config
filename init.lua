@@ -1,229 +1,136 @@
+-- ============================================================================
+-- Options
+-- ============================================================================
+local opt = vim.opt
 
-vim.opt.conceallevel = 2
-vim.opt.clipboard = "unnamedplus" 
+opt.clipboard = "unnamedplus"
+opt.number = true
+opt.relativenumber = true
+opt.scrolloff = 10
+opt.fillchars:append({ vert = "│" })
+opt.guicursor = "v-c-sm-i-ci-ve-r-cr-o:ver25"
+
+opt.expandtab = true
+opt.tabstop = 4
+opt.shiftwidth = 4
+opt.softtabstop = 4
+
+-- ============================================================================
+-- Plugin Manager (lazy.nvim)
+-- ============================================================================
 require("config.lazy")
-require("mason").setup()
 
--- Add this to your init.lua or config file
-vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    -- Get all buffer numbers
-    local buffers = vim.api.nvim_list_bufs()
-    
-    for _, buf in ipairs(buffers) do
-      -- Skip unloaded buffers
-      if vim.api.nvim_buf_is_loaded(buf) then
-        local buf_name = vim.api.nvim_buf_get_name(buf)
-        
-        -- Check if buffer name contains "NVIMTREE" (case insensitive)
-        if buf_name:upper():find("NvimTree") then
-          -- Forcefully wipe out the buffer
-          vim.cmd("silent! bwipeout " .. buf)
-        end
-      end
-    end
-    
-    -- Optional: Notify how many buffers were cleaned
-    print("Cleaned up NVIMTREE buffers on startup")
-  end,
-  once = true,  -- Only run once on startup
-})
-vim.opt.fillchars:append({ vert = "│" })
-vim.api.nvim_create_autocmd("ColorScheme", {
-  callback = function()
-    vim.api.nvim_set_hl(0, "NvimTreeWinSeparator", { fg = "#444b5d", bg = "NONE" })
-  end,
-})
-vim.opt.scrolloff = 10
-vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    if vim.fn.argc() == 0 then
-      -- Prevent Alpha redraw crashes
-      vim.schedule(function()
-        local alpha = require("alpha")
-        alpha.start()
-      end)
-    end
-  end,
-})
+-- ============================================================================
+-- Theme & Highlights
+-- ============================================================================
 
+
+
+-- ============================================================================
+-- Keymaps
+-- ============================================================================
 local keymap = vim.keymap.set
 local opts = { noremap = true, silent = true }
--- Show diagnostics in a floating window
+
+-- Escape shortcuts
+keymap("i", "jk", "<Esc>")
+keymap("i", "jj", "<Esc>")
+keymap("v", "jk", "<Esc>")
+keymap("t", "jj", [[<C-\><C-n>]], opts)
+
+-- Diagnostics
 keymap("n", "<leader>rl", vim.diagnostic.open_float, { desc = "Line diagnostics" })
--- Show all diagnostics in location list
 keymap("n", "<leader>rd", vim.diagnostic.setloclist, { desc = "Diagnostic list" })
 
+-- Comments (Neovim built-in)
+keymap("n", "<leader>co", "gcc", { remap = true, desc = "Comment toggle current line" })
+keymap("x", "<leader>co", "gc", { remap = true, desc = "Comment toggle visual selection" })
 
-vim.g.catppuccin_flavour = "mocha"
-vim.cmd.colorscheme "catppuccin"
-require("notify").setup({
-  background_colour = "#1e1e2e",  -- or "#000000" or a better match to your theme
-}) 
--- Set transparent background (works with most themes)
-vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
-vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
-
-vim.o.number = true
-vim.o.relativenumber = true
-
--- Exit insert mode by typing 'jk'
-vim.keymap.set("i", "jk", "<Esc>")
-vim.keymap.set("i", "jj", "<Esc>")
-
-
--- Exit visual mode with 'jk'
-vim.keymap.set("v", "jk", "<Esc>")
-
-
--- Keybindings
-vim.keymap.set("n", "<leader>e", function()
+-- NvimTree
+keymap("n", "<leader>e", function()
   local nvim_tree = require("nvim-tree.api")
   if nvim_tree.tree.is_visible() then
-    nvim_tree.tree.focus()  -- Focus if already open
+    nvim_tree.tree.focus()
   else
-    nvim_tree.tree.open()   -- Open if closed
+    nvim_tree.tree.open()
   end
 end, { desc = "Focus/Open Nvim-tree" })
 
-local keymap = vim.keymap.set
-local opts = { noremap = true, silent = true }
+-- Splits & window navigation
+keymap("n", "<leader>wv", "<C-w>v", opts)
+keymap("n", "<leader>ws", "<C-w>s", opts)
+keymap("n", "<leader><leader>h", "<C-w>h", opts)
+keymap("n", "<leader><leader>l", "<C-w>l", opts)
+keymap("n", "<leader><leader>j", "<C-w>j", opts)
+keymap("n", "<leader><leader>k", "<C-w>k", opts)
+keymap("n", "<leader>wd", "<C-w>q", opts)
+keymap("n", "<leader>wc", "<C-w>c", opts)
 
--- Set cursor to bar in Insert mode, block in Normal mode
-vim.o.guicursor = "v-c-sm-i-ci-ve-r-cr-o:ver25"
+-- Window resize
+keymap("n", "<leader>w=", "<C-w>=", opts)
+keymap("n", "<leader>w_", "<C-w>_", opts)
+keymap("n", "<leader>w|", "<C-w>|", opts)
+keymap("n", "<leader>r<Up>", ":resize +4<CR>", opts)
+keymap("n", "<leader>r<Down>", ":resize -4<CR>", opts)
+keymap("n", "<leader>r<Right>", ":vertical resize +4<CR>", opts)
+keymap("n", "<leader>r<Left>", ":vertical resize -4<CR>", opts)
 
-    
--- Splits
-keymap('n', '<leader>wv', '<C-w>v', opts) -- vertical split
-keymap('n', '<leader>ws', '<C-w>s', opts) -- horizontal split
-
--- Movement
-keymap('n', '<leader><leader>h', '<C-w>h', opts)
-keymap('n', '<leader><leader>l', '<C-w>l', opts)
-keymap('n', '<leader><leader>j', '<C-w>j', opts)
-keymap('n', '<leader><leader>k', '<C-w>k', opts)
-
--- Close/Quit
-keymap('n', '<leader>wd', '<C-w>q', opts)
-keymap('n', '<leader>wc', '<C-w>c', opts)
-
--- Resize
-keymap('n', '<leader>w=', '<C-w>=', opts) -- equal size
-keymap('n', '<leader>w_', '<C-w>_', opts) -- max height
-keymap('n', '<leader>w|', '<C-w>|', opts) -- max width
-
-
--- Resize height
---
-keymap('n', '<leader>r<Up>', ':resize +4<CR>', opts)     -- taller
-keymap('n', '<leader>r<Down>', ':resize -4<CR>', opts)   -- shorter
-
--- Resize width
-keymap('n', '<leader>r<Right>', ':vertical resize +4<CR>', opts)  -- wider
-keymap('n', '<leader>r<Left>', ':vertical resize -4<CR>', opts)   -- narrower
-
-
-vim.keymap.set('n', '<leader>t', function()
+-- Terminals
+keymap("n", "<leader>t", function()
   vim.cmd("split | terminal")
 end, { noremap = true, silent = true, desc = "Open terminal in horizontal split" })
-vim.keymap.set('n', '<leader>tv', function()
+
+keymap("n", "<leader>tv", function()
   vim.cmd("vsplit | terminal")
 end, { noremap = true, silent = true, desc = "Open terminal in vertical split" })
 
+-- Save & quit
+keymap("n", "<leader>ww", ":w<CR>", opts)
+keymap("n", "<leader>wq", ":wq<CR>", opts)
+keymap("n", "<leader>QQ", ":q!<CR>", opts)
 
--- Save
-keymap('n', '<leader>ww', ':w<CR>', opts)     -- Save file
--- Quit
-vim.keymap.set("n", "<leader>qq", function()
-  -- gather all listed buffers
+keymap("n", "<leader>qq", function()
   local bufs = vim.tbl_filter(function(b)
     return vim.api.nvim_buf_is_valid(b) and vim.fn.buflisted(b) == 1
   end, vim.api.nvim_list_bufs())
 
   local cur = vim.api.nvim_get_current_buf()
 
-  local function buf_is_term(buf)
-    return vim.api.nvim_buf_get_option(buf, "buftype") == "terminal"
-  end
-
   if #bufs <= 1 then
-    -- only one buffer open → close it and quit Neovim
-    if buf_is_term(cur) then
-      vim.cmd("bd! " .. cur)  -- force delete terminal buffer
-    else
+    if vim.bo[cur].buftype == "terminal" then
       vim.cmd("bd! " .. cur)
-    end
-    vim.cmd("qa")
-  else
-    -- multiple buffers → go to last, then delete current
-    vim.cmd("bp")  -- switch to previous buffer
-    local prev_buf = vim.fn.bufnr("#")  -- alternate buffer
-
-    if buf_is_term(prev_buf) then
-      vim.cmd("bd! " .. prev_buf)
+      vim.cmd("qa")
     else
-      vim.cmd("bd! " .. prev_buf)
+      vim.cmd("confirm qa")
+    end
+  else
+    vim.cmd("bp")
+    local target = vim.fn.bufnr("#")
+    if target ~= -1 and vim.api.nvim_buf_is_valid(target) then
+      if vim.bo[target].buftype == "terminal" then
+        vim.cmd("bd! " .. target)
+      else
+        vim.cmd("confirm bd " .. target)
+      end
     end
   end
 end, { desc = "Close buffer or exit Neovim if last" })
 
-
--- Save and Quit
-keymap('n', '<leader>wq', ':wq<CR>', opts)    -- Save and quit
--- force quit
-keymap('n', '<leader>QQ', ':q!<CR>', opts)      -- Force quit
-
-vim.keymap.set("n", "<leader>qa", function()
-  vim.cmd("bufdo bd")      -- Closes all buffers
-  vim.cmd("qa")            -- Quits Neovim
+keymap("n", "<leader>qa", function()
+  vim.cmd("bufdo bd")
+  vim.cmd("qa")
 end, { desc = "Close all buffers and quit Neovim" })
 
--- Make <Esc> exit terminal mode
-vim.keymap.set('t', 'jj', [[<C-\><C-n>]], opts)
-
-
-
-local set = vim.opt
-
--- Always use spaces instead of literal tab characters
-set.expandtab = true
-
--- Number of spaces inserted when <Tab> is pressed
-set.tabstop = 4
-
--- Number of spaces used for auto-indent
-set.shiftwidth = 4
-
--- Handle backspace/tab properly in insert mode
-set.softtabstop = 4
-
-
--- Silence "vim.lsp.get_buffers_by_client_id() is deprecated" from upstream plugins
--- that haven't migrated yet (nvim-lspconfig, nvim-navbuddy)
-vim.lsp.get_buffers_by_client_id = function(client_id)
-  local bufs = {}
-  for _, client in ipairs(vim.lsp.get_clients({ id = client_id })) do
-    for _, buf in ipairs(client.attached_buffers or {}) do
-      table.insert(bufs, buf)
-    end
-  end
-  return bufs
-end
-
-
-
-_G.copy_project_tree = function()
-  -- 1. Check if we are in a git repo
+-- Copy project tree
+local function copy_project_tree()
   local handle_git = io.popen("git rev-parse --is-inside-work-tree 2>/dev/null")
-  local is_git = handle_git:read("*a"):match("true")
-  handle_git:close()
+  local is_git = handle_git and handle_git:read("*a"):match("true")
+  if handle_git then
+    handle_git:close()
+  end
 
   local cmd
   if is_git then
-    -- This command combines:
-    -- A) Git tracked & untracked files/dirs (git ls-files)
-    -- B) All directories that are NOT ignored by git (even if empty)
-    -- C) Any .env files (even if ignored)
     cmd = [[
       (
         git ls-files --cached --others --exclude-standard --directory --full-name | sed 's|^|./|';
@@ -234,12 +141,10 @@ _G.copy_project_tree = function()
       ) | sort -u | tree --fromfile .
     ]]
   else
-    -- Fallback for non-git projects
     cmd = "tree -I 'node_modules|.git' -a"
   end
 
   local result = vim.fn.system(cmd)
-
   if result ~= "" then
     vim.fn.setreg("+", result)
     vim.notify("Project tree copied (with empty dirs & .env)", vim.log.levels.INFO)
@@ -248,5 +153,61 @@ _G.copy_project_tree = function()
   end
 end
 
--- Map to <leader>cp
-vim.keymap.set("n", "<leader>cp", "<cmd>lua copy_project_tree()<CR>", { desc = "Copy Project Tree" })
+keymap("n", "<leader>cp", copy_project_tree, { desc = "Copy Project Tree" })
+
+-- undo
+vim.cmd.packadd("nvim.undotree")
+vim.keymap.set("n", "<leader>u", "<cmd>Undotree<CR>", { desc = "Toggle UndoTree" })
+
+-- ============================================================================
+-- Autocmds & Compatibility Shims
+-- ============================================================================
+-- Native 0.12 UI2 (floating/inline messages, highlighted cmdline, scrollable pager)
+vim.o.cmdheight = 0 -- optional: hides the bottom cmdline when idle
+require("vim._core.ui2").enable({
+  enable = true,
+  msg = {
+    targets = "msg", -- or omit `targets` to use Neovim's defaults (cmd/msg/pager split)
+    msg = { height = 0.3, timeout = 4000 },
+    pager = { height = 0.5 },
+  },
+})
+--
+vim.api.nvim_create_autocmd("VimEnter", {
+  once = true,
+  callback = function()
+    if vim.fn.argc() == 0 then
+      vim.schedule(function()
+        require("alpha").start()
+      end)
+    end
+  end,
+})
+
+local sweep_group = vim.api.nvim_create_augroup("SweepLlamaAuto", { clear = true })
+local sync_cmd = vim.fn.expand("~/.local/bin/sweep-llama-sync")
+
+vim.api.nvim_create_autocmd("VimEnter", {
+  group = sweep_group,
+  callback = function()
+    vim.fn.jobstart({ sync_cmd }, { detach = true })
+  end,
+})
+
+vim.api.nvim_create_autocmd("VimLeave", {
+  group = sweep_group,
+  callback = function()
+    vim.fn.jobstart({ "sh", "-c", "sleep 0.5 && " .. vim.fn.shellescape(sync_cmd) }, { detach = true })
+  end,
+})
+
+-- Silence deprecation warning from older plugins (e.g. nvim-navbuddy)
+vim.lsp.get_buffers_by_client_id = function(client_id)
+  local bufs = {}
+  for _, client in ipairs(vim.lsp.get_clients({ id = client_id })) do
+    for _, buf in ipairs(client.attached_buffers or {}) do
+      table.insert(bufs, buf)
+    end
+  end
+  return bufs
+end

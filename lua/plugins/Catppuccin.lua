@@ -1,25 +1,28 @@
 return {
   "catppuccin/nvim",
   name = "catppuccin",
-  priority = 1000, -- load before all other UI plugins
-  lazy = false,    -- load immediately at startup
+  priority = 1000,
+  lazy = false,
   config = function()
     require("catppuccin").setup({
-      integrations = {
-        treesitter = true,
-        native_lsp = {
-          enabled = true,
-          underlines = {
-            errors = { "undercurl" },
-            hints = { "undercurl" },
-            warnings = { "undercurl" },
-            information = { "undercurl" },
-          },
+      flavour = "mocha",
+      transparent_background = true,
+      float = {
+        transparent = true,
+        solid = false,
+      },
+      auto_integrations = true,
+      lsp_styles = {
+        underlines = {
+          errors = { "undercurl" },
+          hints = { "undercurl" },
+          warnings = { "undercurl" },
+          information = { "undercurl" },
+          ok = { "undercurl" },
         },
-        -- add more integrations if you like
       },
     })
-    vim.cmd.colorscheme "catppuccin"
+
+    vim.cmd.colorscheme("catppuccin-mocha")
   end,
 }
-
