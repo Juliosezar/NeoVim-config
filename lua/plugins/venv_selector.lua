@@ -6,6 +6,7 @@ return {
   opts = {
     options = {
       notify_user_on_venv_activation = true,
+      log_level = "debug",
     },
   },
   keys = {
